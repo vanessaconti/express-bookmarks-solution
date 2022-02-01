@@ -1,52 +1,51 @@
 const express = require("express");
 const bookmarks = express.Router();
-const bookmarkArray = require("../models/bookmarksArray.js");
-
-// Custom Middleware
-const validateURL = (req, res, next) => {
-  if (
-    req.body.url.substring(0, 7) === "http://" ||
-    req.body.url.substring(0, 8) === "https://"
-  ) {
-    return next();
-  } else {
-    res
-      .status(400)
-      .send(`Oops, you forgot to start your url with http:// or https://`);
-  }
-};
+const {getAllBookmarks, getBookmark, createBookmark} = require('../queries/bookmarks')
+const {checkName, checkBoolean} = require('../validations/checkBookmarks')
 
 // INDEX
-bookmarks.get("/", (req, res) => {
-  res.status(200).json(bookmarkArray);
+bookmarks.get("/", async (req, res) => {
+  const allBookmarks = await getAllBookmarks();
+  if (allBookmarks[0]) {
+    res.status(200).json(allBookmarks);
+  } else {
+    res.status(500).json({ error: "server error" });
+  }
 });
 
 // SHOW
-bookmarks.get("/:arrayIndex", (req, res) => {
-  if (bookmarkArray[req.params.arrayIndex]) {
-    res.json(bookmarkArray[req.params.arrayIndex]);
+bookmarks.get("/:id", async (req, res) => {
+  const {id} = req.params;
+  const bookmark = await getBookmark(id);
+  if (bookmark) {
+    res.json(bookmark);
   } else {
-    res.redirect("/404");
+    res.status(404).json({ error: "not found" });
   }
-});
-
-// UPDATE
-bookmarks.put("/:arrayIndex", async (req, res) => {
-  bookmarkArray[req.params.arrayIndex] = req.body;
-  res.status(200).json(bookmarkArray[req.params.arrayIndex]);
 });
 
 // CREATE
 
-bookmarks.post("/", validateURL, (req, res) => {
-  const updatedArray = await bookmarkArray.push(req.body);
-  res.json(bookmarkArray[updatedArray - 1]);
+bookmarks.post("/", checkBoolean, checkName, async (req, res) => {
+  try {
+    const bookmark = await createBookmark(req.body)
+    res.json(bookmark);
+  }catch (error) {
+    res.status(400).json({error: error});
+  }
 });
 
+// UPDATE
+// bookmarks.put("/:arrayIndex", async (req, res) => {
+//   bookmarkArray[req.params.arrayIndex] = req.body;
+//   res.status(200).json(bookmarkArray[req.params.arrayIndex]);
+// });
+
+
 // DELETE
-bookmarks.delete("/:indexArray", (req, res) => {
-  const deletedBookMark = bookmarkArray.splice(req.params.indexArray, 1);
-  res.status(200).json(deletedBookMark);
-});
+// bookmarks.delete("/:indexArray", (req, res) => {
+//   const deletedBookMark = bookmarkArray.splice(req.params.indexArray, 1);
+//   res.status(200).json(deletedBookMark);
+// });
 
 module.exports = bookmarks;
