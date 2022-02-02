@@ -46,6 +46,9 @@ bookmarks.delete("/:id", async (req, res) => {
   const { id } = req.params;
   const deletedBookmark = await deleteBookmark(id);
   // If there is an error and object is returned which is truthy. Therefore we used .id to check that the deletedBookmark variable holds the keys and volume we want. 
+  
+  // since we used the "one" sql method, which returns an object, if the call to the database is successful we can use dot notation in our conditional for error handling
+  // If we used dot "any", which returns multiple rows of data in an array, when the call to the database is successful we CANNOT use dot notation
   if (deletedBookmark.id) {
     res.status(200).json(deletedBookmark);
   } else {
@@ -57,6 +60,8 @@ bookmarks.delete("/:id", async (req, res) => {
 bookmarks.put("/:id", checkBoolean,checkName, async (req,res) =>{
   const updatedBookmark = await updateBookmark(req.params.id, req.body);
   // If there is an error and object is returned which is truthy. Therefore we used .id to check that the updatedBookmark variable holds the keys and volume we want. 
+
+  // since we used the "one" sql method, which returns an object, if the call to the database is successful we can use dot notation in our conditional for error handling
   if(updatedBookmark.id){
     res.status(200).json(updatedBookmark);
   }else {
