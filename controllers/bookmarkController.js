@@ -45,6 +45,7 @@ bookmarks.post("/", checkBoolean, checkName, async (req, res) => {
 bookmarks.delete("/:id", async (req, res) => {
   const { id } = req.params;
   const deletedBookmark = await deleteBookmark(id);
+  // If there is an error and object is returned which is truthy. Therefore we used .id to check that the deletedBookmark variable holds the keys and volume we want. 
   if (deletedBookmark.id) {
     res.status(200).json(deletedBookmark);
   } else {
@@ -53,10 +54,14 @@ bookmarks.delete("/:id", async (req, res) => {
 });
 
 // UPDATE
-bookmarks.put("/:id", async (req, res) => {
-  const {id} = req.params;
-  const updatedBookmark = await updateBookmark(id, req.body);
-  res.status(200).json(updatedBookmark);
-});
+bookmarks.put("/:id", async (req,res) =>{
+  const updatedBookmark = await updateBookmark(req.params.id, req.body);
+  // If there is an error and object is returned which is truthy. Therefore we used .id to check that the updatedBookmark variable holds the keys and volume we want. 
+  if(updatedBookmark.id){
+    res.status(200).json(updatedBookmark);
+  }else {
+    res.status(404).json("Bookmark does not exist");
+  }
+})
 
 module.exports = bookmarks;

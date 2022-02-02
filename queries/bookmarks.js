@@ -35,6 +35,8 @@ const createBookmark = async (bookmark) => {
 
 const deleteBookmark = async (id) => {
   try {
+    // Use SQL Method one because we only want to delete the one bookmark. If there is an error the request will not resolve
+    // If we only have one index variable we do not need an array 
     const deletedBookmark = await db.one(
       "DELETE FROM bookmarks WHERE id = $1 RETURNING *",
       id
@@ -47,16 +49,19 @@ const deleteBookmark = async (id) => {
 
 const updateBookmark = async (id, bookmark) => {
   try {
-    const updatedBookmark = await db.one(
-      "UPDATE bookmarks SET name=$1, url=$2, category=$3, is_favorite=$4 where id=$5 RETURNING *",
-      [bookmark.name, bookmark.url, bookmark.category, bookmark.is_favorite, id]
-    );
-    // console.log(updatedBookmark);
-    return updatedBookmark;
-  } catch (error) {
+    const { name, url, category, is_favorite } = bookmark;
+    // Use SQL Method one because we only want to update the one bookmark. If there is an error the request will not resolve
+    // Use an array for the second argument because there are multiple index variables 
+    // With PG-Promise the index starts at $1
+    // The variables in the array must correspond to the index you stated in the query. 
+    const changedBookmark = await db.one("UPDATE bookmarks SET name=$1, URL=$2, category=$3, is_favorite=$4 WHERE id=$5 RETURNING *",[ name, url, category, is_favorite, id] );
+    return changedBookmark;
+  }catch(error){
     return error;
-  }
-};
+  };
+}
+
+// Documentation https://www.npmjs.com/package/pg-promise#documentation
 
 module.exports = {
   getAllBookmarks,
