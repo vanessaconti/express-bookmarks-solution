@@ -7,11 +7,11 @@ const checkName = (req, res, next) => {
 };
 
 const checkBoolean = (req, res, next) => {
-  const { isFavorite } = req.body;
+  const { is_favorite } = req.body;
   if (
-    isFavorite == "true" ||
-    isFavorite == "false" ||
-    isFavorite == undefined
+    is_favorite == "true" ||
+    is_favorite == "false" ||
+    is_favorite == undefined
   ) {
     next();
   } else {

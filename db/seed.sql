@@ -1,7 +1,7 @@
--- step 1 connect to the db
-\c bookmarks_dev
--- step 2 add values to our table
-INSERT INTO bookmarks (name, url, isFavorite, category) VALUES 
-('MDN', 'https://developer.mozilla.org/en-US/', true, 'educational'),
-('Apartment Therapy', 'https://www.apartmenttherapy.com', true, 'inspirational'),
-('DMV', 'https://dmv.ny.gov', false, 'adulting')
+\c bookmarks_dev;
+
+INSERT INTO bookmarks (name, url, category, is_favorite) VALUES
+  ('MDN', 'https://developer.mozilla.org/en-US/', 'educational', true),
+  ('Apartment Therapy', 'https://www.apartmenttherapy.com', 'inspirational', true),
+  ('Pursuit', 'http://www.pursuit.org', null, true),
+  ('DMV', 'https://dmv.ny.gov', 'adulting', true);

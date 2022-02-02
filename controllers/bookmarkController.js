@@ -1,7 +1,13 @@
 const express = require("express");
 const bookmarks = express.Router();
-const {getAllBookmarks, getBookmark, createBookmark} = require('../queries/bookmarks')
-const {checkName, checkBoolean} = require('../validations/checkBookmarks')
+const {
+  getAllBookmarks,
+  getBookmark,
+  createBookmark,
+  deleteBookmark,
+  updateBookmark
+} = require("../queries/bookmarks");
+const { checkName, checkBoolean } = require("../validations/checkBookmarks");
 
 // INDEX
 bookmarks.get("/", async (req, res) => {
@@ -15,7 +21,7 @@ bookmarks.get("/", async (req, res) => {
 
 // SHOW
 bookmarks.get("/:id", async (req, res) => {
-  const {id} = req.params;
+  const { id } = req.params;
   const bookmark = await getBookmark(id);
   if (bookmark) {
     res.json(bookmark);
@@ -28,24 +34,29 @@ bookmarks.get("/:id", async (req, res) => {
 
 bookmarks.post("/", checkBoolean, checkName, async (req, res) => {
   try {
-    const bookmark = await createBookmark(req.body)
+    const bookmark = await createBookmark(req.body);
     res.json(bookmark);
-  }catch (error) {
-    res.status(400).json({error: error});
+  } catch (error) {
+    res.status(400).json({ error: error });
+  }
+});
+
+// DELETE
+bookmarks.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+  const deletedBookmark = await deleteBookmark(id);
+  if (deletedBookmark.id) {
+    res.status(200).json(deletedBookmark);
+  } else {
+    res.status(404).json("Bookmark not found");
   }
 });
 
 // UPDATE
-// bookmarks.put("/:arrayIndex", async (req, res) => {
-//   bookmarkArray[req.params.arrayIndex] = req.body;
-//   res.status(200).json(bookmarkArray[req.params.arrayIndex]);
-// });
-
-
-// DELETE
-// bookmarks.delete("/:indexArray", (req, res) => {
-//   const deletedBookMark = bookmarkArray.splice(req.params.indexArray, 1);
-//   res.status(200).json(deletedBookMark);
-// });
+bookmarks.put("/:id", async (req, res) => {
+  const {id} = req.params;
+  const updatedBookmark = await updateBookmark(id, req.body);
+  res.status(200).json(updatedBookmark);
+});
 
 module.exports = bookmarks;
