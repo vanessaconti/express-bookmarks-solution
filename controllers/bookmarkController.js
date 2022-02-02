@@ -54,7 +54,7 @@ bookmarks.delete("/:id", async (req, res) => {
 });
 
 // UPDATE
-bookmarks.put("/:id", async (req,res) =>{
+bookmarks.put("/:id", checkBoolean,checkName, async (req,res) =>{
   const updatedBookmark = await updateBookmark(req.params.id, req.body);
   // If there is an error and object is returned which is truthy. Therefore we used .id to check that the updatedBookmark variable holds the keys and volume we want. 
   if(updatedBookmark.id){
